@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react'
 import { Link, useNavigate } from 'react-router-dom'
-import axios from 'axios'
+import axios from '../../axios'
 
 const OrderListScreen = () => {
   const [orders, setOrders] = useState([])
@@ -11,10 +11,15 @@ const OrderListScreen = () => {
   useEffect(() => {
     if (userInfo && userInfo.isAdmin) {
       const fetchOrders = async () => {
-        const config = { headers: { Authorization: `Bearer ${userInfo.token}` } }
-        const { data } = await axios.get('http://localhost:5000/api/orders', config)
-        setOrders(data)
-        setLoading(false)
+        try {
+          const config = { headers: { Authorization: `Bearer ${userInfo.token}` } }
+          const { data } = await axios.get('/api/orders', config)
+          setOrders(data)
+          setLoading(false)
+        } catch (error) {
+          console.error("Error fetching orders", error)
+          setLoading(false)
+        }
       }
       fetchOrders()
     } else {

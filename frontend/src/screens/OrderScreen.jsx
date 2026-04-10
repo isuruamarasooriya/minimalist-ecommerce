@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react'
 import { Link, useParams } from 'react-router-dom'
-import axios from 'axios'
+import axios from '../axios'
 import { loadStripe } from '@stripe/stripe-js'
 import { Elements } from '@stripe/react-stripe-js'
 import CheckoutForm from '../components/CheckoutForm'
@@ -22,7 +22,7 @@ const OrderScreen = () => {
           Authorization: `Bearer ${userInfo.token}`,
         },
       }
-      const { data } = await axios.get(`http://localhost:5000/api/orders/${orderId}`, config)
+      const { data } = await axios.get(`/api/orders/${orderId}`, config)
       setOrder(data)
       setLoading(false)
     } catch (err) {
@@ -44,7 +44,7 @@ const OrderScreen = () => {
           Authorization: `Bearer ${userInfo.token}`,
         },
       }
-      await axios.put(`http://localhost:5000/api/orders/${orderId}/deliver`, {}, config)
+      await axios.put(`/api/orders/${orderId}/deliver`, {}, config)
       fetchOrder()
     } catch (err) {
       alert(err.response && err.response.data.message ? err.response.data.message : err.message)
@@ -91,7 +91,11 @@ const OrderScreen = () => {
             <div className="flex flex-col gap-4">
               {order.orderItems.map((item, index) => (
                 <div key={index} className="flex flex-col sm:flex-row sm:items-center gap-6 py-4 border-b border-gray-50 last:border-0">
-                  <img src={`http://localhost:5000${item.image}`} alt={item.name} className="w-16 h-16 object-contain rounded-xl bg-gray-50 p-2" />
+                  <img 
+                    src={item.image.startsWith('http') ? item.image : `${axios.defaults.baseURL}${item.image}`} 
+                    alt={item.name} 
+                    className="w-16 h-16 object-contain rounded-xl bg-gray-50 p-2" 
+                  />
                   <Link to={`/product/${item.product}`} className="flex-1 font-bold text-gray-800 hover:text-gray-500 transition text-sm">
                     {item.name}
                   </Link>

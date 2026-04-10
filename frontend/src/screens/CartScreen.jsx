@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react'
 import { Link, useParams, useLocation, useNavigate } from 'react-router-dom'
-import axios from 'axios'
+import axios from '../axios'
 
 const CartScreen = () => {
   const { id } = useParams()
@@ -19,7 +19,7 @@ const CartScreen = () => {
 
       if (id) {
         try {
-          const { data } = await axios.get(`http://localhost:5000/api/products/${id}`)
+          const { data } = await axios.get(`/api/products/${id}`)
           
           const item = {
             product: data._id,
@@ -39,7 +39,6 @@ const CartScreen = () => {
           }
 
           localStorage.setItem('cartItems', JSON.stringify(currentCart))
-          
           navigate('/cart', { replace: true })
         } catch (error) {
           console.error("Error fetching product for cart", error)
@@ -75,7 +74,6 @@ const CartScreen = () => {
       <h1 className="text-4xl font-black mb-10 uppercase tracking-tighter">Shopping Cart</h1>
       
       <div className="flex flex-col lg:flex-row gap-12">
-        
         <div className="lg:w-2/3">
           {cartItems.length === 0 ? (
             <div className="bg-gray-50 p-20 rounded-3xl border-2 border-dashed border-gray-200 text-center flex flex-col items-center justify-center">
@@ -89,7 +87,11 @@ const CartScreen = () => {
               {cartItems.map((item) => (
                 <div key={item.product} className="flex flex-col sm:flex-row items-center justify-between bg-white p-6 rounded-3xl shadow-xl border border-gray-100 gap-6 group hover:border-black transition-all">
                   
-                  <img src={`http://localhost:5000${item.image}`} alt={item.name} className="w-24 h-24 object-contain rounded-xl bg-gray-50 p-2" />
+                  <img 
+                    src={item.image.startsWith('http') ? item.image : `${axios.defaults.baseURL}${item.image}`} 
+                    alt={item.name} 
+                    className="w-24 h-24 object-contain rounded-xl bg-gray-50 p-2" 
+                  />
                   
                   <Link to={`/product/${item.product}`} className="flex-1 font-black text-lg text-gray-800 hover:text-gray-500 truncate px-4 transition">
                     {item.name}
@@ -142,7 +144,6 @@ const CartScreen = () => {
             </button>
           </div>
         </div>
-
       </div>
     </div>
   )

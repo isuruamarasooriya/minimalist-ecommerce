@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react'
 import { useParams, useNavigate, Link } from 'react-router-dom'
-import axios from 'axios'
+import axios from '../../axios'
 
 const ProductEditScreen = () => {
   const { id } = useParams()
@@ -18,12 +18,16 @@ const ProductEditScreen = () => {
 
   useEffect(() => {
     const fetchProduct = async () => {
-      const { data } = await axios.get(`http://localhost:5000/api/products/${id}`)
-      setName(data.name)
-      setPrice(data.price)
-      setCategory(data.category)
-      setCountInStock(data.countInStock)
-      setDescription(data.description)
+      try {
+        const { data } = await axios.get(`/api/products/${id}`)
+        setName(data.name)
+        setPrice(data.price)
+        setCategory(data.category)
+        setCountInStock(data.countInStock)
+        setDescription(data.description)
+      } catch (error) {
+        console.error("Error fetching product", error)
+      }
     }
     fetchProduct()
   }, [id])
@@ -46,7 +50,7 @@ const ProductEditScreen = () => {
           Authorization: `Bearer ${userInfo.token}`,
         },
       }
-      await axios.put(`http://localhost:5000/api/products/${id}`, formData, config)
+      await axios.put(`/api/products/${id}`, formData, config)
       setLoading(false)
       navigate('/admin/productlist')
     } catch (err) {

@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react'
 import { Link, useNavigate } from 'react-router-dom'
-import axios from 'axios'
+import axios from '../axios'
 
 const UserOrdersScreen = () => {
   const [orders, setOrders] = useState([])
@@ -18,7 +18,7 @@ const UserOrdersScreen = () => {
           const config = {
             headers: { Authorization: `Bearer ${userInfo.token}` }
           }
-          const { data } = await axios.get('http://localhost:5000/api/orders/myorders', config)
+          const { data } = await axios.get('/api/orders/myorders', config)
           setOrders(data)
           setLoading(false)
         } catch (err) {

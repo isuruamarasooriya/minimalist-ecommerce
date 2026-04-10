@@ -11,7 +11,6 @@ const PaymentScreen = () => {
     }
   }, [navigate])
 
-  // Default එක කෙලින්ම 'Stripe' කියලා දුන්නා
   const [paymentMethod, setPaymentMethod] = useState('Stripe')
 
   const submitHandler = (e) => {
@@ -26,7 +25,6 @@ const PaymentScreen = () => {
         <h1 className="text-3xl font-black mb-8 uppercase tracking-tighter text-center">Payment Method</h1>
 
         <form onSubmit={submitHandler} className="flex flex-col gap-8">
-          
           <div className="flex flex-col gap-4">
             <h2 className="text-[10px] font-black uppercase tracking-[0.2em] border-b-2 border-gray-100 pb-4 text-gray-400">
               Select Method
@@ -47,9 +45,6 @@ const PaymentScreen = () => {
                 <span className="text-xs font-bold text-gray-400 uppercase">Pay securely with your card</span>
               </div>
             </label>
-            
-            {/* අනාගතයේදී PayPal එකතු කරනවා නම් මෙතනට කේතය දාන්න පුළුවන් */}
-
           </div>
 
           <button

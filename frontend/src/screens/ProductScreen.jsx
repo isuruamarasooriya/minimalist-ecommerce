@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react'
 import { useParams, Link, useNavigate } from 'react-router-dom'
-import axios from 'axios'
+import axios from '../axios'
 
 const ProductScreen = () => {
   const [product, setProduct] = useState({ reviews: [] })
@@ -14,7 +14,7 @@ const ProductScreen = () => {
 
   const fetchProduct = async () => {
     try {
-      const { data } = await axios.get(`http://localhost:5000/api/products/${id}`)
+      const { data } = await axios.get(`/api/products/${id}`)
       setProduct(data)
     } catch (error) {
       console.error("Error fetching product details", error)
@@ -38,7 +38,7 @@ const ProductScreen = () => {
           Authorization: `Bearer ${userInfo.token}`,
         },
       }
-      await axios.post(`http://localhost:5000/api/products/${id}/reviews`, { rating, comment }, config)
+      await axios.post(`/api/products/${id}/reviews`, { rating, comment }, config)
       alert('Review Submitted!')
       setRating(0)
       setComment('')
@@ -47,6 +47,10 @@ const ProductScreen = () => {
       alert(err.response && err.response.data.message ? err.response.data.message : err.message)
     }
   }
+
+  const imageUrl = product.image 
+    ? (product.image.startsWith('http') ? product.image : `${axios.defaults.baseURL}${product.image}`)
+    : ''
 
   return (
     <div className="container mx-auto mt-8 p-4">
@@ -57,7 +61,7 @@ const ProductScreen = () => {
       <div className="grid grid-cols-1 md:grid-cols-2 gap-10">
         <div>
           <img 
-            src={`http://localhost:5000${product.image}`} 
+            src={imageUrl} 
             alt={product.name} 
             className="w-full rounded-xl shadow-lg object-cover"
           />

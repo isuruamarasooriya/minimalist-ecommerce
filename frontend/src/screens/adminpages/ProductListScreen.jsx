@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react'
 import { Link, useNavigate } from 'react-router-dom'
-import axios from 'axios'
+import axios from '../../axios'
 
 const ProductListScreen = () => {
   const [products, setProducts] = useState([])
@@ -11,7 +11,7 @@ const ProductListScreen = () => {
 
   const fetchProducts = async () => {
     try {
-      const { data } = await axios.get('http://localhost:5000/api/products')
+      const { data } = await axios.get('/api/products')
       setProducts(data)
       setLoading(false)
     } catch (err) {
@@ -31,7 +31,7 @@ const ProductListScreen = () => {
     if (window.confirm('Are you sure you want to delete this product?')) {
       try {
         const config = { headers: { Authorization: `Bearer ${userInfo.token}` } }
-        await axios.delete(`http://localhost:5000/api/products/${id}`, config)
+        await axios.delete(`/api/products/${id}`, config)
         fetchProducts()
       } catch (err) {
         alert(err.message)

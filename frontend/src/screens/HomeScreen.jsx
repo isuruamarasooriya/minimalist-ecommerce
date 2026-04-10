@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react'
 import { useParams } from 'react-router-dom'
-import axios from 'axios'
+import axios from '../axios'
 import Product from '../components/Product'
 
 const HomeScreen = () => {
@@ -11,8 +11,8 @@ const HomeScreen = () => {
     const fetchProducts = async () => {
       try {
         const url = keyword 
-          ? `http://localhost:5000/api/products?keyword=${keyword}` 
-          : 'http://localhost:5000/api/products'
+          ? `/api/products?keyword=${keyword}` 
+          : '/api/products'
           
         const { data } = await axios.get(url)
         setProducts(data)

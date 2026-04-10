@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react'
 import { useNavigate } from 'react-router-dom'
-import axios from 'axios'
+import axios from '../../axios'
 
 const UserListScreen = () => {
   const [users, setUsers] = useState([])
@@ -17,7 +17,7 @@ const UserListScreen = () => {
           Authorization: `Bearer ${userInfo.token}`,
         },
       }
-      const { data } = await axios.get('http://localhost:5000/api/users', config)
+      const { data } = await axios.get('/api/users', config)
       setUsers(data)
       setLoading(false)
     } catch (err) {
@@ -42,7 +42,7 @@ const UserListScreen = () => {
             Authorization: `Bearer ${userInfo.token}`,
           },
         }
-        await axios.delete(`http://localhost:5000/api/users/${id}`, config)
+        await axios.delete(`/api/users/${id}`, config)
         fetchUsers()
       } catch (err) {
         alert(err.response && err.response.data.message ? err.response.data.message : err.message)

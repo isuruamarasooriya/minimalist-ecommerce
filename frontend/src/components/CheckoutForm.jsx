@@ -1,6 +1,6 @@
 import React, { useState } from 'react'
 import { CardElement, useStripe, useElements } from '@stripe/react-stripe-js'
-import axios from 'axios'
+import axios from '../axios'
 
 const CheckoutForm = ({ orderId, userInfo }) => {
   const stripe = useStripe()
@@ -19,7 +19,7 @@ const CheckoutForm = ({ orderId, userInfo }) => {
       const config = { headers: { Authorization: `Bearer ${userInfo.token}` } }
       
       const { data: { clientSecret } } = await axios.post(
-        `http://localhost:5000/api/orders/${orderId}/pay-stripe`, 
+        `/api/orders/${orderId}/pay-stripe`, 
         {}, 
         config
       )
@@ -35,7 +35,7 @@ const CheckoutForm = ({ orderId, userInfo }) => {
         setError(`Payment failed: ${payload.error.message}`)
         setProcessing(false)
       } else {
-        await axios.put(`http://localhost:5000/api/orders/${orderId}/pay`, payload.paymentIntent, config)
+        await axios.put(`/api/orders/${orderId}/pay`, payload.paymentIntent, config)
         setSucceeded(true)
         setProcessing(false)
         window.location.reload()

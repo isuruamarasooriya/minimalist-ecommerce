@@ -1,12 +1,17 @@
 import React from 'react'
 import { Link } from 'react-router-dom'
+import axios from '../axios'
 
 const Product = ({ product }) => {
+  const imageUrl = product.image.startsWith('http')
+    ? product.image
+    : `${axios.defaults.baseURL}${product.image}`
+
   return (
     <div className="bg-white rounded-lg shadow-md overflow-hidden hover:shadow-xl transition-shadow duration-300">
       <Link to={`/product/${product._id}`}>
         <img 
-          src={`http://localhost:5000${product.image}`} 
+          src={imageUrl} 
           alt={product.name} 
           className="w-full h-64 object-cover"
         />

@@ -1,13 +1,13 @@
 import React, { useState } from 'react'
 import { Link, useNavigate } from 'react-router-dom'
-import axios from 'axios'
+import axios from '../axios'
 
 const PlaceOrderScreen = () => {
   const navigate = useNavigate()
   
   const cartItems = JSON.parse(localStorage.getItem('cartItems')) || []
   const shippingAddress = JSON.parse(localStorage.getItem('shippingAddress')) || {}
-  const paymentMethod = JSON.parse(localStorage.getItem('paymentMethod')) || 'PayPal'
+  const paymentMethod = JSON.parse(localStorage.getItem('paymentMethod')) || 'Stripe'
   const userInfo = JSON.parse(localStorage.getItem('userInfo'))
   const itemsPrice = cartItems.reduce((acc, item) => acc + item.price * item.qty, 0)
   const shippingPrice = itemsPrice > 5000 ? 0 : 350
@@ -25,7 +25,7 @@ const PlaceOrderScreen = () => {
       }
 
       const { data } = await axios.post(
-        'http://localhost:5000/api/orders',
+        '/api/orders',
         {
           orderItems: cartItems,
           shippingAddress,
@@ -52,10 +52,7 @@ const PlaceOrderScreen = () => {
       </h1>
 
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-10">
-        
-        {/* වම් පැත්ත: Order Details */}
         <div className="lg:col-span-2 flex flex-col gap-8">
-          
           <div className="bg-white p-6 rounded-xl shadow-sm border border-gray-100">
             <h2 className="text-xl font-bold mb-3 uppercase tracking-wider text-gray-700">Shipping</h2>
             <p className="text-gray-600">
@@ -75,7 +72,11 @@ const PlaceOrderScreen = () => {
                 {cartItems.map((item, index) => (
                   <div key={index} className="flex items-center justify-between border-b pb-4 last:border-0 last:pb-0">
                     <div className="flex items-center gap-4">
-                      <img src={`http://localhost:5000${item.image}`} alt={item.name} className="w-16 h-16 object-cover rounded-lg" />
+                      <img 
+                        src={item.image.startsWith('http') ? item.image : `${axios.defaults.baseURL}${item.image}`} 
+                        alt={item.name} 
+                        className="w-16 h-16 object-cover rounded-lg" 
+                      />
                       <Link to={`/product/${item.product}`} className="font-semibold hover:underline text-blue-600">{item.name}</Link>
                     </div>
                     <div className="font-medium">
@@ -91,7 +92,6 @@ const PlaceOrderScreen = () => {
         <div className="lg:col-span-1">
           <div className="bg-white p-8 rounded-xl shadow-lg border border-gray-100 sticky top-24">
             <h2 className="text-2xl font-bold mb-6 border-b pb-4">Order Summary</h2>
-            
             <div className="flex justify-between mb-3 text-gray-600">
               <span>Items</span>
               <span>Rs.{itemsPrice.toFixed(2)}</span>
@@ -116,7 +116,6 @@ const PlaceOrderScreen = () => {
             </button>
           </div>
         </div>
-
       </div>
     </div>
   )

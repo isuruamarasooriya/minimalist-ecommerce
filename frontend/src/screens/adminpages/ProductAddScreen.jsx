@@ -1,6 +1,6 @@
 import React, { useState } from 'react'
 import { useNavigate } from 'react-router-dom'
-import axios from 'axios'
+import axios from '../../axios'
 
 const ProductAddScreen = () => {
   const [name, setName] = useState('')
@@ -20,7 +20,7 @@ const ProductAddScreen = () => {
     const formData = new FormData()
     formData.append('name', name)
     formData.append('price', price)
-    formData.append('image', image) // File එක
+    formData.append('image', image)
     formData.append('category', category)
     formData.append('countInStock', countInStock)
     formData.append('description', description)
@@ -33,7 +33,7 @@ const ProductAddScreen = () => {
           Authorization: `Bearer ${userInfo.token}`
         }
       }
-      await axios.post('http://localhost:5000/api/products/add', formData, config)
+      await axios.post('/api/products/add', formData, config)
       setUploading(false)
       navigate('/admin/productlist')
     } catch (err) {

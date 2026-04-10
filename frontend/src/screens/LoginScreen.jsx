@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react'
 import { Link, useLocation, useNavigate } from 'react-router-dom'
-import axios from 'axios'
+import axios from '../axios'
 
 const LoginScreen = () => {
   const [email, setEmail] = useState('')
@@ -29,7 +29,7 @@ const LoginScreen = () => {
         },
       }
       const { data } = await axios.post(
-        'http://localhost:5000/api/users/login',
+        '/api/users/login',
         { email, password },
         config
       )

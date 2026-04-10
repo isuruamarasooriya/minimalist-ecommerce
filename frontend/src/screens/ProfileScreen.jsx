@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react'
 import { useNavigate } from 'react-router-dom'
-import axios from 'axios'
+import axios from '../axios'
 
 const ProfileScreen = () => {
   const navigate = useNavigate()
@@ -18,7 +18,7 @@ const ProfileScreen = () => {
     if (!userInfo) {
       navigate('/login')
     }
-  }, [navigate]) 
+  }, [navigate, userInfo]) 
 
   const submitHandler = async (e) => {
     e.preventDefault()
@@ -33,7 +33,7 @@ const ProfileScreen = () => {
           },
         }
         const { data } = await axios.put(
-          'http://localhost:5000/api/users/profile',
+          '/api/users/profile',
           { id: userInfo._id, name, email, password, currentPassword },
           config
         )
