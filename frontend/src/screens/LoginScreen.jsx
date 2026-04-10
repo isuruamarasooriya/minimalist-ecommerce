@@ -35,6 +35,7 @@ const LoginScreen = () => {
       )
 
       localStorage.setItem('userInfo', JSON.stringify(data))
+      window.dispatchEvent(new Event('userInfoUpdated'))
       navigate(redirect)
     } catch (err) {
       setError(err.response && err.response.data.message ? err.response.data.message : err.message)
