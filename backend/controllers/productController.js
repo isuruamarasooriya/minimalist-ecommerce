@@ -26,6 +26,10 @@ const addProduct = async (req, res) => {
     try {
         const { name, price, description, category, countInStock } = req.body;
         
+        if (!req.file) {
+            return res.status(400).json({ message: "Please upload an image" });
+        }
+
         const imageUrl = process.env.NODE_ENV === 'production' 
             ? req.file.location 
             : `/uploads/${req.file.filename}`;
@@ -43,7 +47,7 @@ const addProduct = async (req, res) => {
         const createdProduct = await product.save();
         res.status(201).json(createdProduct);
     } catch (error) {
-        res.status(500).json({ message: "Error adding product" });
+        res.status(500).json({ message: error.message });
     }
 };
 

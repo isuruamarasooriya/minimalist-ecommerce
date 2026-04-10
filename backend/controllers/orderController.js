@@ -1,3 +1,4 @@
+const stripe = require('stripe')(process.env.STRIPE_SECRET_KEY);
 const Order = require('../models/Order');
 
 const addOrderItems = async (req, res) => {
@@ -57,7 +58,7 @@ const updateOrderToPaid = async (req, res) => {
                 id: req.body.id,
                 status: req.body.status,
                 update_time: req.body.update_time,
-                email_address: req.body.email_address,
+                email_address: req.body.receipt_email || req.user.email,
             };
 
             const updatedOrder = await order.save();
@@ -70,6 +71,28 @@ const updateOrderToPaid = async (req, res) => {
     }
 };
 
+const createPaymentIntent = async (req, res) => {
+    try {
+        const order = await Order.findById(req.params.id);
+
+        if (order) {
+            const paymentIntent = await stripe.paymentIntents.create({
+                amount: Math.round(order.totalPrice * 100),
+                currency: 'lkr',
+                metadata: { order_id: order._id.toString() },
+            });
+
+            res.send({
+                clientSecret: paymentIntent.client_secret,
+            });
+        } else {
+            res.status(404).json({ message: "Order not found" });
+        }
+    } catch (error) {
+        res.status(500).json({ message: error.message });
+    }
+};
+
 const getMyOrders = async (req, res) => {
     try {
         const orders = await Order.find({ user: req.user._id });
@@ -79,4 +102,39 @@ const getMyOrders = async (req, res) => {
     }
 };
 
-module.exports = { addOrderItems, getOrderById, updateOrderToPaid, getMyOrders };
+const getOrders = async (req, res) => {
+    try {
+        const orders = await Order.find({}).populate('user', 'id name');
+        res.json(orders);
+    } catch (error) {
+        res.status(500).json({ message: "Error fetching all orders" });
+    }
+};
+
+const updateOrderToDelivered = async (req, res) => {
+    try {
+        const order = await Order.findById(req.params.id);
+
+        if (order) {
+            order.isDelivered = true;
+            order.deliveredAt = Date.now();
+
+            const updatedOrder = await order.save();
+            res.json(updatedOrder);
+        } else {
+            res.status(404).json({ message: "Order not found" });
+        }
+    } catch (error) {
+        res.status(500).json({ message: "Error updating delivery status" });
+    }
+};
+
+module.exports = { 
+    addOrderItems, 
+    getOrderById, 
+    updateOrderToPaid, 
+    createPaymentIntent, 
+    getMyOrders,
+    getOrders,
+    updateOrderToDelivered
+};

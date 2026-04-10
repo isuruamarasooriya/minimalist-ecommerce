@@ -39,14 +39,14 @@ if (process.env.NODE_ENV === 'production') {
 const upload = multer({
     storage,
     fileFilter: (req, file, cb) => {
-        const filetypes = /jpg|jpeg|png/;
+        const filetypes = /jpg|jpeg|png|webp|avif/;
         const extname = filetypes.test(path.extname(file.originalname).toLowerCase());
         const mimetype = filetypes.test(file.mimetype);
 
         if (extname && mimetype) {
             return cb(null, true);
         } else {
-            cb(new Error('Images only (jpg, jpeg, png)'));
+            cb(new Error('Images only (jpg, jpeg, png, webp, avif)'));
         }
     }
 });
