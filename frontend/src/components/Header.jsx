@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react'
 import { Link, useNavigate } from 'react-router-dom'
+import SearchBox from './SearchBox'
 
 const Header = () => {
   const navigate = useNavigate()
@@ -31,13 +32,17 @@ const Header = () => {
 
   return (
     <header className="bg-gray-900 text-white shadow-md sticky top-0 z-50">
-      <div className="container mx-auto px-4 py-4 flex justify-between items-center">
+      <div className="container mx-auto px-4 py-4 flex flex-wrap lg:flex-nowrap justify-between items-center gap-4">
         
-        <Link to="/" className="text-2xl font-extrabold tracking-widest text-white hover:text-gray-300 transition">
+        <Link to="/" className="text-2xl font-extrabold tracking-widest text-white hover:text-gray-300 transition shrink-0">
           MINIMALIST.
         </Link>
 
-        <nav className="flex items-center gap-8 text-sm font-semibold tracking-wide uppercase">
+        <div className="w-full lg:w-auto flex-1 max-w-xl mx-auto order-last lg:order-none px-0 lg:px-8 text-black">
+          <SearchBox />
+        </div>
+
+        <nav className="flex items-center gap-8 text-sm font-semibold tracking-wide uppercase shrink-0">
           
           <Link to="/cart" className="relative flex items-center hover:text-blue-400 transition">
             <span className="mr-1">Cart</span>
