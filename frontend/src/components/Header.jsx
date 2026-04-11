@@ -5,28 +5,36 @@ import SearchBox from './SearchBox'
 const Header = () => {
   const navigate = useNavigate()
 
-  const cartItems = localStorage.getItem('cartItems') 
-    ? JSON.parse(localStorage.getItem('cartItems')) 
-    : []
-  const cartCount = cartItems.reduce((acc, item) => acc + item.qty, 0)
+  const [userInfo, setUserInfo] = useState(null)
+  const [cartCount, setCartCount] = useState(0)
 
-  const [userInfo, setUserInfo] = useState(
-    localStorage.getItem('userInfo') 
-      ? JSON.parse(localStorage.getItem('userInfo')) 
-      : null
-  )
+  const updateHeader = () => {
+    const user = localStorage.getItem('userInfo')
+    setUserInfo(user ? JSON.parse(user) : null)
+
+    const cartItems = localStorage.getItem('cartItems')
+      ? JSON.parse(localStorage.getItem('cartItems'))
+      : []
+    const count = cartItems.reduce((acc, item) => acc + item.qty, 0)
+    setCartCount(count)
+  }
 
   useEffect(() => {
-    const handleUserUpdate = () => {
-      setUserInfo(localStorage.getItem('userInfo') ? JSON.parse(localStorage.getItem('userInfo')) : null)
+    updateHeader()
+
+    window.addEventListener('userInfoUpdated', updateHeader)
+    window.addEventListener('storage', updateHeader)
+
+    return () => {
+      window.removeEventListener('userInfoUpdated', updateHeader)
+      window.removeEventListener('storage', updateHeader)
     }
-    window.addEventListener('userInfoUpdated', handleUserUpdate)
-    return () => window.removeEventListener('userInfoUpdated', handleUserUpdate)
   }, [])
 
   const logoutHandler = () => {
     localStorage.removeItem('userInfo')
     setUserInfo(null)
+    window.dispatchEvent(new Event('userInfoUpdated'))
     navigate('/login')
   }
 
@@ -45,7 +53,7 @@ const Header = () => {
         <nav className="flex items-center gap-8 text-sm font-semibold tracking-wide uppercase shrink-0">
           
           <Link to="/cart" className="relative flex items-center hover:text-blue-400 transition">
-            <span className="mr-1">Cart</span>
+            <span className="mr-1 text-white">Cart</span>
             {cartCount > 0 && (
               <span className="absolute -top-3 -right-4 bg-red-600 text-white text-xs px-2 py-0.5 rounded-full shadow-lg">
                 {cartCount}
@@ -79,7 +87,7 @@ const Header = () => {
               </div>
             </div>
           ) : (
-            <Link to="/login" className="hover:text-blue-400 transition">
+            <Link to="/login" className="hover:text-blue-400 transition text-white">
               Login
             </Link>
           )}
