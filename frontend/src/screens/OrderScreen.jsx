@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react'
-import { Link, useParams } from 'react-router-dom'
+import { Link, useParams, useNavigate } from 'react-router-dom'
 import axios from '../axios'
 import { loadStripe } from '@stripe/stripe-js'
 import { Elements } from '@stripe/react-stripe-js'
@@ -9,6 +9,7 @@ const stripePromise = loadStripe(import.meta.env.VITE_STRIPE_PUBLISHABLE_KEY)
 
 const OrderScreen = () => {
   const { id: orderId } = useParams()
+  const navigate = useNavigate()
   const [order, setOrder] = useState(null)
   const [error, setError] = useState('')
   const [loading, setLoading] = useState(true)
@@ -16,6 +17,11 @@ const OrderScreen = () => {
   const userInfo = JSON.parse(localStorage.getItem('userInfo'))
 
   const fetchOrder = async () => {
+    if (!userInfo) {
+      navigate('/login')
+      return
+    }
+
     try {
       const config = {
         headers: {
@@ -32,10 +38,14 @@ const OrderScreen = () => {
   }
 
   useEffect(() => {
-    if (!order || order._id !== orderId) {
-      fetchOrder()
+    if (!userInfo) {
+      navigate('/login')
+    } else {
+      if (!order || order._id !== orderId) {
+        fetchOrder()
+      }
     }
-  }, [order, orderId, userInfo.token])
+  }, [order, orderId, userInfo, navigate])
 
   const deliverHandler = async () => {
     try {
@@ -100,7 +110,7 @@ const OrderScreen = () => {
                     {item.name}
                   </Link>
                   <div className="font-black text-black text-sm">
-                    {item.qty} x Rs. {item.price} = <span className="text-gray-400 ml-2">Rs. {item.qty * item.price}</span>
+                    {item.qty} x Rs. {item.price} = <span className="text-gray-400 ml-2">Rs. {(item.qty * item.price).toFixed(2)}</span>
                   </div>
                 </div>
               ))}
@@ -128,7 +138,7 @@ const OrderScreen = () => {
               <span className="text-white font-black text-3xl">Rs. {order.totalPrice.toFixed(2)}</span>
             </div>
 
-            {!order.isPaid && (
+            {!order.isPaid && userInfo && !userInfo.isAdmin && (
               <div className="mt-4 pt-6 border-t border-gray-800">
                 <div className="bg-white p-6 rounded-2xl mb-4">
                   <Elements stripe={stripePromise}>
