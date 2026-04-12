@@ -43,6 +43,7 @@ const RegisterScreen = () => {
       )
 
       localStorage.setItem('userInfo', JSON.stringify(data))
+      window.dispatchEvent(new Event('userInfoUpdated'))
       navigate(redirect)
       
     } catch (err) {
