@@ -50,7 +50,7 @@ const ProductScreen = () => {
 
   const imageUrl = product.image 
     ? (product.image.startsWith('http') ? product.image : `${axios.defaults.baseURL}${product.image}`)
-    : ''
+    : undefined
 
   return (
     <div className="container mx-auto mt-8 p-4">
@@ -60,11 +60,15 @@ const ProductScreen = () => {
       
       <div className="grid grid-cols-1 md:grid-cols-2 gap-10">
         <div>
-          <img 
-            src={imageUrl} 
-            alt={product.name} 
-            className="w-full rounded-xl shadow-lg object-cover"
-          />
+          {imageUrl ? (
+            <img 
+              src={imageUrl} 
+              alt={product?.name || 'Product'} 
+              className="w-full rounded-xl shadow-lg object-cover"
+            />
+          ) : (
+            <div className="w-full h-80 bg-gray-200 rounded-xl shadow-lg animate-pulse"></div>
+          )}
         </div>
         
         <div className="flex flex-col gap-5">
@@ -97,34 +101,42 @@ const ProductScreen = () => {
           </p>
           
           <div className="mt-4">
-            {product.countInStock > 0 && (
-              <div className="flex items-center gap-4 mb-6">
-                <span className="text-gray-700 font-semibold">Quantity:</span>
-                <select 
-                  value={qty} 
-                  onChange={(e) => setQty(Number(e.target.value))}
-                  className="border border-gray-300 rounded-md px-4 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
-                >
-                  {[...Array(product.countInStock).keys()].map((x) => (
-                    <option key={x + 1} value={x + 1}>
-                      {x + 1}
-                    </option>
-                  ))}
-                </select>
+            {userInfo && userInfo.isAdmin ? (
+              <div className="bg-gray-200 text-gray-600 px-8 py-4 text-center rounded-lg uppercase font-bold w-full md:w-auto cursor-not-allowed">
+                Admins Cannot Place Orders
               </div>
-            )}
-
-            {product.countInStock > 0 ? (
-              <button 
-                onClick={addToCartHandler} 
-                className="bg-black text-white px-8 py-4 rounded-lg hover:bg-gray-800 transition uppercase font-bold w-full md:w-auto shadow-md"
-              >
-                Add To Cart
-              </button>
             ) : (
-              <button disabled className="bg-gray-400 text-white px-8 py-4 rounded-lg uppercase font-bold w-full md:w-auto cursor-not-allowed">
-                Out of Stock
-              </button>
+              <>
+                {product.countInStock > 0 && (
+                  <div className="flex items-center gap-4 mb-6">
+                    <span className="text-gray-700 font-semibold">Quantity:</span>
+                    <select 
+                      value={qty} 
+                      onChange={(e) => setQty(Number(e.target.value))}
+                      className="border border-gray-300 rounded-md px-4 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
+                    >
+                      {[...Array(product.countInStock).keys()].map((x) => (
+                        <option key={x + 1} value={x + 1}>
+                          {x + 1}
+                        </option>
+                      ))}
+                    </select>
+                  </div>
+                )}
+
+                {product.countInStock > 0 ? (
+                  <button 
+                    onClick={addToCartHandler} 
+                    className="bg-black text-white px-8 py-4 rounded-lg hover:bg-gray-800 transition uppercase font-bold w-full md:w-auto shadow-md"
+                  >
+                    Add To Cart
+                  </button>
+                ) : (
+                  <button disabled className="bg-gray-400 text-white px-8 py-4 rounded-lg uppercase font-bold w-full md:w-auto cursor-not-allowed">
+                    Out of Stock
+                  </button>
+                )}
+              </>
             )}
           </div>
         </div>
@@ -152,7 +164,15 @@ const ProductScreen = () => {
 
         <div>
           <h2 className="text-2xl font-black uppercase mb-6 tracking-tight">Write a Review</h2>
-          {userInfo ? (
+          {!userInfo ? (
+            <div className="bg-blue-50 p-6 rounded-xl border border-blue-100 text-blue-800 text-sm font-medium">
+              Please <Link to="/login" className="font-bold underline decoration-2">Sign In</Link> to share your thoughts on this product.
+            </div>
+          ) : userInfo.isAdmin ? (
+            <div className="bg-gray-100 p-6 rounded-xl border border-gray-200 text-gray-600 text-sm font-bold text-center uppercase tracking-wider">
+              Administrators cannot submit product reviews.
+            </div>
+          ) : (
             <form onSubmit={submitHandler} className="bg-gray-50 p-8 rounded-2xl border border-gray-200 shadow-inner">
               <div className="mb-5">
                 <label className="block text-xs font-bold uppercase text-gray-500 mb-2">Rating</label>
@@ -185,10 +205,6 @@ const ProductScreen = () => {
                 Post Review
               </button>
             </form>
-          ) : (
-            <div className="bg-blue-50 p-6 rounded-xl border border-blue-100 text-blue-800 text-sm font-medium">
-              Please <Link to="/login" className="font-bold underline decoration-2">Sign In</Link> to share your thoughts on this product.
-            </div>
           )}
         </div>
       </div>

@@ -104,6 +104,10 @@ const deleteProduct = async (req, res) => {
 
 const createProductReview = async (req, res) => {
     try {
+        if (req.user && req.user.isAdmin) {
+            return res.status(403).json({ message: "Action Denied: Administrators cannot review products." });
+        }
+
         const { rating, comment } = req.body;
         const product = await Product.findById(req.params.id);
 

@@ -3,6 +3,10 @@ const Order = require('../models/Order');
 
 const addOrderItems = async (req, res) => {
     try {
+        if (req.user && req.user.isAdmin) {
+            return res.status(403).json({ message: "Action Denied: Administrators cannot place orders. Please use a customer account." });
+        }
+
         const {
             orderItems,
             shippingAddress,

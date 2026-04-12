@@ -39,6 +39,11 @@ const CartScreen = () => {
           }
 
           localStorage.setItem('cartItems', JSON.stringify(currentCart))
+          
+          setTimeout(() => {
+            window.dispatchEvent(new Event('cartUpdated'))
+          }, 100)
+
           navigate('/cart', { replace: true })
         } catch (error) {
           console.error("Error fetching product for cart", error)
@@ -57,12 +62,20 @@ const CartScreen = () => {
     )
     setCartItems(updatedCart)
     localStorage.setItem('cartItems', JSON.stringify(updatedCart))
+    
+    setTimeout(() => {
+      window.dispatchEvent(new Event('cartUpdated'))
+    }, 100)
   }
 
   const removeFromCartHandler = (productId) => {
     const updatedCart = cartItems.filter(item => item.product !== productId)
     setCartItems(updatedCart)
     localStorage.setItem('cartItems', JSON.stringify(updatedCart))
+    
+    setTimeout(() => {
+      window.dispatchEvent(new Event('cartUpdated'))
+    }, 100)
   }
 
   const checkoutHandler = () => {
@@ -130,10 +143,10 @@ const CartScreen = () => {
         <div className="lg:w-1/3">
           <div className="bg-white p-8 rounded-3xl shadow-2xl border border-gray-100 sticky top-24">
             <h2 className="text-[10px] font-black uppercase tracking-[0.2em] mb-8 border-b-2 border-gray-100 pb-4 text-gray-400">
-              Subtotal ({cartItems.reduce((acc, item) => acc + item.qty, 0)}) items
+              Subtotal ({cartItems.reduce((acc, item) => acc + Number(item.qty), 0)}) items
             </h2>
             <div className="text-4xl font-black text-black mb-10">
-              Rs. {cartItems.reduce((acc, item) => acc + item.qty * item.price, 0).toFixed(2)}
+              Rs. {cartItems.reduce((acc, item) => acc + Number(item.qty) * item.price, 0).toFixed(2)}
             </div>
             <button 
               disabled={cartItems.length === 0}

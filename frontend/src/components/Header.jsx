@@ -15,7 +15,7 @@ const Header = () => {
     const cartItems = localStorage.getItem('cartItems')
       ? JSON.parse(localStorage.getItem('cartItems'))
       : []
-    const count = cartItems.reduce((acc, item) => acc + item.qty, 0)
+    const count = cartItems.reduce((acc, item) => acc + Number(item.qty), 0)
     setCartCount(count)
   }
 
@@ -24,10 +24,12 @@ const Header = () => {
 
     window.addEventListener('userInfoUpdated', updateHeader)
     window.addEventListener('storage', updateHeader)
+    window.addEventListener('cartUpdated', updateHeader)
 
     return () => {
       window.removeEventListener('userInfoUpdated', updateHeader)
       window.removeEventListener('storage', updateHeader)
+      window.removeEventListener('cartUpdated', updateHeader)
     }
   }, [])
 
@@ -52,14 +54,16 @@ const Header = () => {
 
         <nav className="flex items-center gap-8 text-sm font-semibold tracking-wide uppercase shrink-0">
           
-          <Link to="/cart" className="relative flex items-center hover:text-blue-400 transition">
-            <span className="mr-1 text-white">Cart</span>
-            {cartCount > 0 && (
-              <span className="absolute -top-3 -right-4 bg-red-600 text-white text-xs px-2 py-0.5 rounded-full shadow-lg">
-                {cartCount}
-              </span>
-            )}
-          </Link>
+          {(!userInfo || !userInfo.isAdmin) && (
+            <Link to="/cart" className="relative flex items-center hover:text-blue-400 transition">
+              <span className="mr-1 text-white">Cart</span>
+              {cartCount > 0 && (
+                <span className="absolute -top-3 -right-4 bg-red-600 text-white text-xs px-2 py-0.5 rounded-full shadow-lg">
+                  {cartCount}
+                </span>
+              )}
+            </Link>
+          )}
 
           {userInfo ? (
             <div className="relative group">
@@ -73,9 +77,11 @@ const Header = () => {
                     Profile
                   </Link>
                   
-                  <Link to="/myorders" className="px-4 py-3 hover:bg-gray-100 transition border-b border-gray-100 font-bold text-xs uppercase tracking-wider">
-                    My Orders
-                  </Link>
+                  {(!userInfo || !userInfo.isAdmin) && (
+                    <Link to="/myorders" className="px-4 py-3 hover:bg-gray-100 transition border-b border-gray-100 font-bold text-xs uppercase tracking-wider">
+                      My Orders
+                    </Link>
+                  )}
 
                   <button 
                     onClick={logoutHandler} 
